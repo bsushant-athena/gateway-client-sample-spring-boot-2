@@ -1,0 +1,25 @@
+FROM openjdk
+MAINTAINER SF DevOps <sf-devops@athenahealth.com>
+
+
+# env variables that are not passed as build parameter can be set at runtime:
+
+# set env variables from build args.
+# These are the values that should be decided when we build the image
+# this section of variables is set last, because the values are the one changing each time; this
+# improves performance because we can use cached docker layers
+
+COPY ./java-gateway-client-sample-0.0.1-SNAPSHOT-spring-boot.jar /usr/local/athena/eureka-client.jar
+COPY ./AthenaCerts.pem /etc/ssl/certs/gateway.aws.athenahealth.com.cer
+RUN ls -Rla $JAVA_HOME/jre/lib/security
+RUN $JAVA_HOME/bin/keytool -storepasswd -new athngatewaycert -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit && \
+    echo "yes" | $JAVA_HOME/bin/keytool -import -trustcacerts -file /etc/ssl/certs/gateway.aws.athenahealth.com.cer -alias athnca -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass athngatewaycert && \
+    echo "yes"
+
+CMD ["/usr/bin/java", \
+	"-Xms256M", \
+	"-Xmx256M", \
+	"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044", \
+	"-Djavax.net.ssl.trustStorePassword=athngatewaycert", \
+	"-jar", "/usr/local/athena/eureka-client.jar" , "com.athena.platform.gatewayclient.sample.AthenaEurekaClient"]
+	

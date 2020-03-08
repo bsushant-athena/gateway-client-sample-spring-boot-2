@@ -1,0 +1,18 @@
+
+#To connect as private service
+docker run -d --name dev-java-gateway-client -p 8888:8761 -e PORT0=8888 -e HOST=localhost -e EUREKA_HOST=localhost -e EUREKA_PORT=18888  -e EUREKA_PATH=/eureka/ -e GATEWAY_CLIENT_ID=Os3DsEzkkfKTLoxuosaR -e GATEWAY_SECRET=25YiGoL1cddi8jSTepE8DIZHscAmZ8Ao8ZVJjatN -e GATEWAY_SCOPE=demoscope1 -e GATEWAY_TOKEN_PATH=http://localhost:18888/public/iam/oauth2/v1/token -e eureka.client.serviceUrl.defaultZone=http://localhost:18888/gateway/eureka/ java-gateway-client-sample
+
+##updated ##latest 16th jul 2019
+docker run -d --name dev-java-gateway-client-2 -p 8888:8761 -e PORT0=8888 -e HOST=192.168.0.101 -e EUREKA_HOST=192.168.0.101 -e EUREKA_PORT=18888  -e EUREKA_PATH=/gateway/eureka/ -e GATEWAY_CLIENT_ID=Os3DsEzkkfKTLoxuosaR -e GATEWAY_SECRET=25YiGoL1cddi8jSTepE8DIZHscAmZ8Ao8ZVJjatN -e GATEWAY_SCOPE=gateway.register -e GATEWAY_TOKEN_PATH=https://athenahealthpoc.okta.com/oauth2/aus13kbtj4HAdI3451t7/v1/token -e eureka.client.serviceUrl.defaultZone=http://192.168.0.101:18888/gateway/eureka/ java-gateway-client-sample-2
+
+#To connect as a public service
+docker run -d --name dev-java-gateway-client -p 8888:8761 -e PORT0=8888 -e HOST=localhost -e EUREKA_HOST=localhost -e EUREKA_PORT=18888  -e EUREKA_PATH=/public/eureka/ java-gateway-client-sample
+
+-p 8888:8761 
+	defines the mapping between the container port 8888 and the app port 8761
+
+-e eureka.client.serviceUrl.defaultZone=http://192.168.0.110:18888/gateway/eureka/
+	system variable to tell eureka client where to connect. It is necessary always, and in case of running a gateway in the laptop, you should put here the ip address of the laptop
+
+-e PORT0=8888 -e HOST=192.168.0.110
+	simulate the marathon env variables. 192.168.0.110 is the ip of the container, 8888 is the port that we mapped
